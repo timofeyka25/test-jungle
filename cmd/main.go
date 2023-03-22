@@ -85,7 +85,7 @@ func main() {
 
 	// run app
 	go func() {
-		err = app.Listen(fmt.Sprintf("%s:%s", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT")))
+		err = app.Listen(fmt.Sprintf(":%s", os.Getenv("SERVER_PORT")))
 		if err != nil {
 			log.Println("Server unexpectedly stopped")
 		}
