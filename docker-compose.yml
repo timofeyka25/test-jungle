@@ -1,0 +1,29 @@
+version: '3.9'
+
+services:
+  db:
+    image: mysql:latest
+    volumes:
+      - db:/var/lib/mysql
+      - ./start-script.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+
+  app:
+    build: .
+    ports:
+      - ${SERVER_PORT}:${SERVER_PORT}
+    restart: on-failure
+    depends_on:
+      - db
+    env_file:
+      - .env
+
+
+volumes:
+  db:
