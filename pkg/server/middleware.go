@@ -29,7 +29,7 @@ func (m *tokenValidatorMiddleware) validateToken(ctx *fiber.Ctx) error {
 	if err != nil {
 		return fiber.NewError(fiber.StatusUnauthorized, err.Error())
 	}
-	ctx.Cookie(&fiber.Cookie{Name: "id", Value: strconv.Itoa(parsedParams.Id)})
+	ctx.Cookie(&fiber.Cookie{Name: "id", Value: strconv.FormatInt(parsedParams.Id, 10)})
 
 	return ctx.Next()
 }

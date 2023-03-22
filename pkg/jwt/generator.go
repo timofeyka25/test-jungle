@@ -11,12 +11,12 @@ type TokenGenerator struct {
 }
 
 type Claims struct {
-	Id int `json:"id"`
+	Id int64 `json:"id"`
 	jwt.StandardClaims
 }
 
 type Params struct {
-	Id  int
+	Id  int64
 	Ttl time.Duration
 }
 

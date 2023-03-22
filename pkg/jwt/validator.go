@@ -15,7 +15,7 @@ func NewTokenValidator(cfg Config) *TokenValidator {
 }
 
 type TokenParsedParams struct {
-	Id int
+	Id int64
 }
 
 func (v *TokenValidator) ValidateToken(token string) (*TokenParsedParams, error) {
