@@ -6,7 +6,9 @@ import (
 	"github.com/timofeyka25/test-jungle/internal/handler"
 	"github.com/timofeyka25/test-jungle/internal/repository"
 	"github.com/timofeyka25/test-jungle/internal/usecase"
+	"github.com/timofeyka25/test-jungle/pkg/cloudstorage"
 	database "github.com/timofeyka25/test-jungle/pkg/db"
+	"github.com/timofeyka25/test-jungle/pkg/drivestorage"
 	"github.com/timofeyka25/test-jungle/pkg/jwt"
 	"github.com/timofeyka25/test-jungle/pkg/server"
 	"io"
@@ -36,6 +38,23 @@ func main() {
 	}
 	defer closeDB(db)
 
+	// init google cloud storage file uploader
+	cloudFileUploader, err := cloudstorage.NewFileUploader(cloudstorage.Config{
+		CloudCredentialsPath: os.Getenv("CLOUD_CREDENTIALS_PATH"),
+		ImagesBucketName:     os.Getenv("IMAGES_BUCKET_NAME"),
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// init google drive file uploader
+	driveFileUploader, err := drivestorage.NewFileUploader(drivestorage.Config{
+		CloudCredentialsPath: os.Getenv("CLOUD_CREDENTIALS_PATH"),
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	// init helpers
 	jwtGenerator := jwt.NewTokenGenerator(jwt.Config{SecretKey: os.Getenv("JWT_SECRET_KEY")})
 	jwtValidator := jwt.NewTokenValidator(jwt.Config{SecretKey: os.Getenv("JWT_SECRET_KEY")})
@@ -50,7 +69,11 @@ func main() {
 
 	// init handlers
 	userHandler := handler.NewUserHandler(userUseCase)
-	imageHandler := handler.NewImageHandler(imageUseCase)
+	imageHandler := handler.NewImageHandler(
+		imageUseCase,
+		cloudFileUploader,
+		driveFileUploader,
+	)
 	handlers := handler.NewHandler(
 		userHandler,
 		imageHandler,
